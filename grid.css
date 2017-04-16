@@ -1,0 +1,43 @@
+body {
+	font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	line-height: 1.4em;
+	font-size: 1.6em;
+	background: #f5f5f5;
+	color: #4d4d4d;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	font-weight: 300;
+}
+
+input{outline:none;}
+button {background: none;}
+
+
+.wrapper{
+	margin: 100px 0 ;
+}
+
+.gridtable{
+	background: #FFFFFF;
+	position: relative;
+	box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2);
+}
+.gridtable .row{border-bottom: 1px solid #EEEEEE;margin:0;}
+.gridtable .row > [class*='col-']{padding:0;}
+.gridtable .datacell{background: #FFFFFF;border: 1px solid transparent;}
+.gridtable .datacell:hover{background: #F9FAFC;border:1px dashed #00b9e6;background-color: #ebf7ff;}
+.gridtable .datatext{padding:10px 10px;min-height: 42px;}
+.gridtable .dataedit{display: none;}
+.gridtable .dataedit input{width: 100%;border:0;background: transparent;padding:10px;}
+
+.datacell.editing{border: 1px solid #1ed004 !important;background-color: #d3ffd7 !important;}
+.datacell.editing .datatext{display: none;}
+.datacell.editing .dataedit{display: block;}
+
+.gridtable .new-row{
+	font-size: 2em;line-height: 1em;
+	padding: 10px;
+	border: none;
+	width:100%;
+	background: rgba(0, 0, 0, 0.01);
+}
