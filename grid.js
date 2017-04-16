@@ -15,18 +15,23 @@ var gridStorage = {
   }
 }
 
-Vue.component('datacell', {
+var datacellComponent = {
 	template 	: '#datacell-template',
-	props 		: ['value','celldata','cellname','cellclass'],
+	props 		: ['value','celldata','cellname','cellclass','noneditable'],
 	data 		: function(){
 		return {
-			editing: false,
+			editing: false
 		}
 	},
-	computed	: {},
+	computed	: {
+		editableCell: function(){
+			return !this.noneditable;
+		}
+	},
 	methods 	:{
 		editCell: function(value,field){
-			this.editing = true;
+			if(this.editableCell)
+				this.editing = true;
 		},
 		doneEdit: function(value,field) {
 			this.editing = false;
@@ -43,8 +48,15 @@ Vue.component('datacell', {
 			}
 		}
 	}
-});
+}
 
+Vue.component('datarows', {
+	template 	: '#datarows-template',
+	props 		: ['value'],
+	components 	: {
+		'datacell' : datacellComponent,
+	}
+});
 
 var app = new Vue({
 
@@ -91,40 +103,8 @@ var app = new Vue({
 			})
 			this.newRow = ''
 		},
-		updateCell: function(updated) {
-			console.log(updated);
-			console.log("Updated");
-		},
-		editItem: function(row,field){
-			this.beforeEditCache = row[field] || '';
-			this.editedRow = row
-			this.editedProp = field
-		},
-		doneEdit: function (row,field) {
-			if (!this.editedProp) {
-				return
-			}
-			this.editedProp = null;
-			this.editedRow = null;
-			// console.log(row[field]);
-			row[field] = row[field]?row[field].trim() : "";
-		},
-		cancelEdit: function
-		 (row,field) {
-			this.editedProp = null;
-			this.editedRow = null;
-			row[field] = this.beforeEditCache
-		},
-
 		removeAll: function(){
 			this.rows = [];
-		}
-	},
-	directives: {
-		'row-focus': function (el, value) {
-	  		if (value) {
-				el.focus()
-			}
 		}
 	}
 });

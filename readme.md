@@ -8,8 +8,8 @@ This is an excel style grid editor using vuejs (www.vuejs.org)
 #### v1
 
 - [x] Use Local Storage
-- [ ] Cell based inline editing
-- [ ] Row based inline editing
+- [x] Cell based inline editing
+- [x] Row based inline editing
 - [ ] Grid Traversal
 - [ ] Ajax Update
 - [ ] New Row Addition

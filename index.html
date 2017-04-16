@@ -21,6 +21,11 @@
 				/>
 			</div></div>
 	</header>
+	<datarows v-model="rows"></datarows>
+	<hr/>
+	<h3>Old System</h3>
+	<hr/>
+<!--
 	<div v-for="row in rows" class="row">
 		<datacell v-model="row.name" cellname="name" cellclass="col-sm-3"></datacell>
 		<datacell v-model="row.knownfor" cellname="knownfor" cellclass="col-sm-4"></datacell>
@@ -28,10 +33,7 @@
 		<datacell v-model="row.degree" cellname="degree" cellclass="col-sm-2"></datacell>
 		<datacell v-model="row.specialization" cellname="specialization" cellclass="col-sm-2"></datacell>
 	</div>
-	<hr/>
-	<h3>Old System</h3>
-	<hr/>
-
+ -->
 	<!--
 	<div class="col-sm-1 datacell">
 			<div class="datatext" v-text="row.id"></div>
@@ -51,6 +53,19 @@
 </section>
 </section>
 </div>
+<div></div>
+<template id="datarows-template">
+	<div>
+		<div v-for="row in value" class="row">
+			<datacell v-model="row.id" cellname="id" cellclass="col-sm-1" noneditable="1"></datacell>
+			<datacell v-model="row.name" cellname="name" cellclass="col-sm-3"></datacell>
+			<datacell v-model="row.knownfor" cellname="knownfor" cellclass="col-sm-3"></datacell>
+			<datacell v-model="row.year" cellname="year" cellclass="col-sm-1"></datacell>
+			<datacell v-model="row.degree" cellname="degree" cellclass="col-sm-2"></datacell>
+			<datacell v-model="row.specialization" cellname="specialization" cellclass="col-sm-2"></datacell>
+		</div>
+	</div>
+</template>
 
 <template id="datacell-template">
 <div :class="[cellclass,'datacell',{'editing':editing}]">
@@ -59,7 +74,7 @@
 			@dblclick="editCell(celldata,cellname)"
 			@keyup.enter="editCell(celldata,cellname)"
 	></div>
-	<div class="dataedit">
+	<div class="dataedit" v-if="editableCell">
 		<input type="text"
 			:value="value"
 			:name="cellname"
