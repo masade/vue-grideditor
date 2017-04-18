@@ -24,9 +24,10 @@ button {background: none;}
 }
 .gridtable .row{border-bottom: 1px solid #EEEEEE;margin:0;}
 .gridtable .row > [class*='col-']{padding:0;}
-.gridtable .datacell{background: #FFFFFF;border: 1px solid transparent;}
-.gridtable .datacell:hover{background: #F9FAFC;border:1px dashed #00b9e6;background-color: #ebf7ff;}
-.gridtable .datatext{padding:10px 10px;min-height: 42px;}
+.gridtable .datacell{background: #FFFFFF;border: 1px solid transparent;height: 42px;}
+/*.gridtable .datacell:hover{background: #F9FAFC;border:1px dashed #00b9e6;background-color: #ebf7ff;}*/
+.gridtable .datacell.cursor{background: #F9FAFC;border:1px dashed #00b9e6;background-color: #ebf7ff;}
+.gridtable .datatext{padding:10px 10px;min-height: 42px;text-overflow: clip;white-space: nowrap;overflow: hidden;}
 .gridtable .dataedit{display: none;}
 .gridtable .dataedit input{width: 100%;border:0;background: transparent;padding:10px;}
 
