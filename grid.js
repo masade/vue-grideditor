@@ -24,6 +24,11 @@ var	keys = {
 			DOWN: 40
 		};
 
+
+
+
+
+
 var datacellComponent = {
 	template 	: '#datacell-template',
 	props 		: ['value','celldata','cellname','cellwidth','noneditable','cellindex'],
@@ -54,12 +59,29 @@ var datacellComponent = {
 				// field.target.focus();
 				// this.editme = true;
 				// console.log(field.currentTarget);
+				// console.log(this.cellindex);
 				this.$parent.$parent.editingcell = this.cellindex;
 			}
 		},
+		edited: function(value,field){
+			// if(this.editableCell){
+				// field.target.focus();
+				// this.editme = true;
+				// console.log(field.currentTarget);
+				// console.log(this.cellindex);
+				this.$parent.$parent.edited = this.cellindex;
+			// }
+		},
 		doneEdit: function(value,field) {
-			this.$parent.$parent.editingcell = null;
-			this.$emit('input', value)
+			// console.log(!this.$parent.$parent.edited);
+			if(this.$parent.$parent.edited){
+				// console.log(e.keyCode);
+
+				this.$parent.$parent.editingcell = null;
+				this.$parent.$parent.edited = null;
+				this.$emit('input', value);
+			}
+
 		},
 		cancelEdit: function(value,field) {
 			// this.editing = false;
@@ -73,26 +95,63 @@ var datacellComponent = {
 	directives: {
 		'cell-focus': {
 			inserted: function (el, value) {
-				// console.log(el);
+				this.$parent.$parent.edited = true;
 		  		if (value) {
-					// el.focus()
+					el.getElementsByTagName('input')[0].focus()
 				}
 			}
 		}
 	}
 }
 
-Vue.component('datarows', {
-	template 	: '#datarows-template',
-	props 		: ['value','cols'],
+Vue.component('datagrid', {
+	template 	: '#datagrid-template',
+	props 		: ['rows','cols'],
 	components 	: {
-		'datacell' : datacellComponent,
+		'datacell' 	: datacellComponent,
+		// 'addrow'	:
+	},
+	data 	: function (){
+		return {
+			newRow: '',
+			cursoron: null,
+			editingcell: null,
+			edited: null,
+		}
+	},
+	computed: {
+		totalrows: function(){
+			return this.rows.length;
+		},
+		totalcols: function(){
+			return this.cols.length;
+		}
 	},
 	methods		: {
 		// moveCursor: function(topos){
 			// console.log(topos);
 			// console.log("here");
 		// }
+		addRow: function () {
+
+			var value = this.newRow && this.newRow.trim()
+			if (!value) {
+				return
+			}
+			this.rows.unshift({
+				id: gridStorage.uid++,
+				name: value,
+				knownfor: '',
+				year: '',
+				degree: '',
+				specialization: ''
+			})
+			this.newRow = ''
+			//
+		},
+		removeAll: function(){
+			this.rows = [];
+		}
 	}
 });
 
@@ -103,6 +162,7 @@ var app = new Vue({
 		newRow: '',
 		cursoron: null,
 		editingcell: null,
+		edited: null,
 		cols :[
 			// {m:'id',w:'1',noedit:'true'},
 			{m:'name',w:'3'},
@@ -121,12 +181,7 @@ var app = new Vue({
 		}
 	},
 	computed: {
-		totalrows: function(){
-			return this.rows.length;
-		},
-		totalcols: function(){
-			return this.cols.length;
-		}
+
 	},
 	filters: {
 		pluralize: function (n) {
@@ -137,28 +192,16 @@ var app = new Vue({
 		window.addEventListener('keydown', event => this.handleKeynav(event));
 	},
 	methods: {
-		addRow: function () {
-			var value = this.newRow && this.newRow.trim()
-			if (!value) {
-				return
-			}
-			this.rows.unshift({
-				id: gridStorage.uid++,
-				name: value,
-				knownfor: '',
-				year: '',
-				degree: '',
-				specialization: ''
-			})
-			this.newRow = ''
-		},
 		handleKeynav: function(e) {
 			var preventKey = false;
-			if(!this.editingcell && this.cursoron){
+			if(e.which == keys.ESC){
 				e.preventDefault();
-				// e.stopPropogation();
+			}
+			if(!this.editingcell && this.cursoron){
 				if(e.which == keys.RETURN){
+					e.preventDefault();
 					this.editingcell = this.cursoron;
+					//e.stopPropogation();
 				}
 
 			}
@@ -191,10 +234,9 @@ var app = new Vue({
 			// console.log(e.which);
 
 		},
-		removeAll: function(){
-			this.rows = [];
-		}
+
 	}
 });
+
 
 app.$mount('.gridtable')
