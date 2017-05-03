@@ -33,8 +33,12 @@ var cols = [
 <template id="datagrid-template">
 	<div>
 		<div class="row">
-			<div class="col-sm-4">{{ totalrows}} rows</div>
-			<div class="col-sm-8">
+			<div class="col-sm-6">
+				{{ totalrows}} rows |
+				E: {{ editingcell }} |
+				C: {{ cursorcell }}
+			</div>
+			<div class="col-sm-6">
 				{{totalcols }} cols:
 				<label v-for="col in cols" class="checkbox-inline"><input type="checkbox" v-model="col.show">{{col.m}}</label>
 			</div>
@@ -64,7 +68,22 @@ var cols = [
 <!-- Data Cell template -->
 <template id="datacell-template">
 <div :class="[widthclass,'datacell',{'editing':editing},{'cursor':cursor}]">
-	<div class="datatext" v-text="value" @click="movecursor" @dblclick="editcell"></div>
+	<div class="datatext" v-text="value"
+		v-show="!editing"
+	@click="movecursor"
+	@dblclick="editcell($event)"></div>
+	<div class="dataedit"
+			v-if="editing"
+		>
+		<input type="text"
+			:value="value"
+			:name="cellname"
+			v-focus
+			@blur="doneEdit($event.target.value,$event)"
+			@keyup.enter="doneEdit($event.target.value,$event)"
+			@keyup.esc="cancelEdit($event.target.value,$event)"
+		 />
+	</div>
 </div>
 </template>
 
@@ -109,7 +128,8 @@ var cols = [
 			@click="moveCursor"
 			@dblclick="editCell(celldata,$event)"
 	></div>
-	<div class="dataedit" v-if="editableCell && editing" 			v-cell-focus="editing">
+	<div class="dataedit" v-if="editableCell && editing"
+		v-cell-focus="editing">
 		<input type="text"
 			:value="value"
 			:name="cellname"

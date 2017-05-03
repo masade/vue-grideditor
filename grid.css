@@ -14,7 +14,7 @@ button {background: none;}
 
 
 .wrapper{
-	margin: 100px 0 ;
+	margin: 20px 0 ;
 }
 
 .gridtable{
@@ -28,12 +28,12 @@ button {background: none;}
 /*.gridtable .datacell:hover{background: #F9FAFC;border:1px dashed #00b9e6;background-color: #ebf7ff;}*/
 .gridtable .datacell.cursor{background: #F9FAFC;border:1px dashed #00b9e6;background-color: #ebf7ff;}
 .gridtable .datatext{padding:10px 10px;min-height: 42px;text-overflow: clip;white-space: nowrap;overflow: hidden;}
-.gridtable .dataedit{display: none;}
+/*.gridtable .dataedit{display: none;}*/
 .gridtable .dataedit input{width: 100%;border:0;background: transparent;padding:10px;}
 
 .datacell.editing{border: 1px solid #1ed004 !important;background-color: #d3ffd7 !important;}
-.datacell.editing .datatext{display: none;}
-.datacell.editing .dataedit{display: block;}
+/*.datacell.editing .datatext{display: none;}*/
+/*.datacell.editing .dataedit{display: block;}*/
 
 .gridtable .new-row{
 	font-size: 2em;line-height: 1em;

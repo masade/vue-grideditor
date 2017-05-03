@@ -29,20 +29,41 @@ var datacellComponent = {
 			return (this.$parent.cursorcell == this.cellindex)?true:false;
 		},
 		editing: function(){
-			return (this.$parent.editingcell == this.cellindex)?true:false;
+			return (this.$parent.editcell == this.cellindex)?true:false;
 		}
 	},
 	methods 	:{
 		movecursor: function(){
-			this.$parent.editingcell = null;
+			this.$parent.editcell = null;
 			this.$parent.cursorcell = this.cellindex;
 		},
-		editcell:function(){
+		editcell:function(ev){
 			if(!this.noneditable)
-				this.$parent.editingcell = this.cellindex;
-		}
+				this.$parent.editcell = this.cellindex;
+		},
+		doneEdit: function(value,field) {
+			this.$emit('input', value);
+			if(this.$parent.editing){
+				this.$parent.editcell 	= null;
+				this.$parent.editing	= null;
+			}else{
+				this.$parent.editing	= true;
+			}
+
+		},
+		cancelEdit: function(value,field) {
+			this.$parent.editcell = null;
+			this.$parent.editing	 = null;
+		},
+
 	},
 	directives: {
+		focus: function (el, value) {
+			Vue.nextTick(function() {
+				el.focus();
+				this.$parent.editing = null;
+			})
+		}
 	}
 }
 
@@ -57,8 +78,9 @@ Vue.component('datagrid', {
 	data 	: function (){
 		return {
 			// newRow: '',
-			cursorcell: null,
-			editingcell: null,
+			cursorcell  : null,
+			editcell 	: null,
+			editing 	: null,
 		}
 	},
 	computed   :  {
@@ -99,16 +121,16 @@ Vue.component('datagrid', {
 			if(e.which == keys.ESC){ preventKeyDefault= true;}
 
 			//edit cell on enter
-			if(!this.editingcell && this.cursorcell){
+			if(!this.editcell && this.cursorcell){
 				if(e.which == keys.RETURN){
 					preventKeyDefault = true;
-					this.editingcell = this.cursorcell;
+					this.editcell = this.cursorcell;
 				}
 			}
 
 
 			// Manage cursor movement only when cell not editing
-			if(!this.editingcell){
+			if(!this.editcell){
 				var c = 0; var r = 0;
 				switch(e.which){
 					case keys.LEFT 	:	preventKeyDefault=true;c=-1;r=0;  break;
