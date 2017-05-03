@@ -18,11 +18,13 @@ var gridStorage = {
 var	keys = { ESC: 27, TAB: 9, RETURN: 13, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 };
 
 // Data Cell Component
-var datacellComponent = {
+var datacellComponent = Vue.extend({
 	template 	: '#datacell-template',
 	props 		: ['value','celldata','cellname','widthclass','noneditable','cellindex'],
 	data 		: function(){
-		return {}
+		return {
+			newrow : {}
+		}
 	},
 	computed	: {
 		cursor: function(){
@@ -33,11 +35,7 @@ var datacellComponent = {
 		}
 	},
 	methods 	:{
-		movecursor: function(){
-			this.$parent.editcell = null;
-			this.$parent.cursorcell = this.cellindex;
-		},
-		editcell:function(ev){
+		editCell:function(ev){
 			if(!this.noneditable)
 				this.$parent.editcell = this.cellindex;
 		},
@@ -55,29 +53,41 @@ var datacellComponent = {
 			this.$parent.editcell = null;
 			this.$parent.editing	 = null;
 		},
-
-	},
-	directives: {
-		focus: function (el, value) {
-			Vue.nextTick(function() {
-				el.focus();
-				this.$parent.editing = null;
-			})
+		addRow: function (e) {
+			e.preventDefault();
+			// console.log(this.newrow);
+			var value = this.newrow.name && this.newrow.name.trim()
+			if (!value) {
+				return
+			}
+			this.newrow.id = gridStorage.uid++;
+			this.$parent.rows.unshift(this.newrow)
+			this.newrow = {};
+		},
+		reset: function(e){
+			e.preventDefault();
+			this.newrow={}
+			this.$parent.editingcell = null;
+			this.$parent.cursorcell  = null;
 		}
 	}
-}
+})
+
+var addrowComponent = datacellComponent.extend({
+	template 	: '#addrow-template',
+})
 
 // Data Grid Component
-
 Vue.component('datagrid', {
 	template 	: '#datagrid-template',
 	props 		: ['rows','cols'],
 	components 	: {
 		'datacell' 	: datacellComponent,
+		'addrow'	: addrowComponent,
 	},
 	data 	: function (){
 		return {
-			// newRow: '',
+			newrow: '',
 			cursorcell  : null,
 			editcell 	: null,
 			editing 	: null,
@@ -115,6 +125,10 @@ Vue.component('datagrid', {
 		window.addEventListener('keydown', event => this.handleKeynav(event));
 	},
 	methods: {
+		moveCursor: function(index){
+			this.editcell = null;
+			this.cursorcell = index;
+		},
 		handleKeynav : function(e){
 			var preventKeyDefault = false;
 			// console.log(e.which);
@@ -149,7 +163,7 @@ Vue.component('datagrid', {
 				}else{
 					ri =-1; ci=-1;
 				}
-				this.cursorcell = ri+","+ci;
+				this.moveCursor(ri+","+ci);
 			}
 
 			if(preventKeyDefault)
@@ -159,6 +173,22 @@ Vue.component('datagrid', {
 	}
 
 });
+
+Vue.directive('focus', {
+    inserted: function (el,binding) {
+    	console.log(binding);
+    	if(binding.value){
+    		console.log("yes");
+	        el.focus();
+    	}
+    },
+    update: function (el,binding) {
+        Vue.nextTick(function() {
+        	if(binding.value)
+              el.focus();
+        })
+    }
+})
 
 var app = new Vue({
 
