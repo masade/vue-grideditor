@@ -15,12 +15,44 @@ var gridStorage = {
   }
 }
 
+function isInViewport(element,moveInViewport) {
+	var ww = window.innerWidth;
+	var wh = window.innerHeight;
+	var rect = element.getBoundingClientRect();
+	var html = document.documentElement;
+	var inviewport = (
+		rect.top >= 0 &&
+		rect.left >= 0 &&
+		rect.bottom <= (wh || html.clientHeight) &&
+		rect.right <= (ww || html.clientWidth)
+	);
+	if(!moveInViewport)
+		return inviewport;
+
+	// console.log(inviewport);
+	if(!inviewport){
+		scrollY = document.body.scrollTop;
+		if(rect.bottom >= wh)
+			scrollY += (rect.bottom - wh + 10)
+		if(rect.top <= 0 )
+			scrollY += (rect.top - 10)
+
+		scrollX = document.body.scrollLeft;
+		if(rect.right >= ww)
+			scrollX += (rect.right - ww + 10)
+		if(rect.left <= 0 )
+			scrollX += (rect.left - 10)
+
+	}
+	window.scrollTo(scrollX,scrollY);
+}
+
 var	keys = { ESC: 27, TAB: 9, RETURN: 13, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 };
 
 // Data Cell Component
 var datacellComponent = Vue.extend({
 	template 	: '#datacell-template',
-	props 		: ['value','celldata','cellname','widthclass','noneditable','cellindex'],
+	props 		: ['value','celldata','cellname','widthclass','noneditable','cellindex','namespace'],
 	data 		: function(){
 		return {
 			newrow : {}
@@ -36,6 +68,7 @@ var datacellComponent = Vue.extend({
 	},
 	methods 	:{
 		editCell:function(ev){
+			this.$parent.cursorcell = this.cellindex;
 			if(!this.noneditable)
 				this.$parent.editcell = this.cellindex;
 		},
@@ -67,8 +100,8 @@ var datacellComponent = Vue.extend({
 		reset: function(e){
 			e.preventDefault();
 			this.newrow={}
-			this.$parent.editingcell = null;
-			this.$parent.cursorcell  = null;
+			this.$parent.editcell = null;
+			// this.$parent.cursorcell  = null;
 		}
 	}
 })
@@ -94,6 +127,9 @@ Vue.component('datagrid', {
 		}
 	},
 	computed   :  {
+		cursorrow : function(){
+			return this.cursorcell?parseInt(this.cursorcell.split(',')[0]):null;
+		},
 		colwidths : function(){
 			var sum = 0; var max = 0; var maxindex = 0;
 			var total = this.cols.reduce(function(total,col) {
@@ -175,20 +211,25 @@ Vue.component('datagrid', {
 });
 
 Vue.directive('focus', {
-    inserted: function (el,binding) {
-    	console.log(binding);
-    	if(binding.value){
-    		console.log("yes");
-	        el.focus();
-    	}
-    },
-    update: function (el,binding) {
-        Vue.nextTick(function() {
-        	if(binding.value)
-              el.focus();
-        })
-    }
+	inserted: function (el,binding) {
+		// console.log(binding);
+		if(binding.value){
+			// console.log("yes");
+			el.focus();
+		}
+	},
+	update: function (el,binding) {
+		Vue.nextTick(function() {
+			if(binding.value)
+			  el.focus();
+		})
+	}
 })
+
+Vue.directive('inviewport',function(el,binding){
+	if(binding.value)
+		isInViewport(el,true);
+});
 
 var app = new Vue({
 

@@ -16,7 +16,7 @@ button {background: none;}
 .wrapper{
 	margin: 20px 0 ;
 }
-
+/*.container{width: 1600px;}*/
 .gridtable{
 	background: #FFFFFF;
 	position: relative;
@@ -24,14 +24,23 @@ button {background: none;}
 }
 .gridtable .row{border-bottom: 1px solid #EEEEEE;margin:0;}
 .gridtable .row > [class*='col-']{padding:0;}
-.gridtable .datacell{background: #FFFFFF;border: 1px solid transparent;height: 42px;}
+.gridtable .datacell{border: 1px solid transparent;height: 65px;}
+.gridtable .cursorrow .datacell{background: #FAFBFC;}
 /*.gridtable .datacell:hover{background: #F9FAFC;border:1px dashed #00b9e6;background-color: #ebf7ff;}*/
-.gridtable .datacell.cursor{background: #F9FAFC;border:1px dashed #00b9e6;background-color: #ebf7ff;}
-.gridtable .datatext{padding:10px 10px;min-height: 42px;text-overflow: clip;white-space: nowrap;overflow: hidden;}
+.gridtable .datacell.cursor{border:1px dashed #00b9e6 !important;background-color: #ebf7ff !important;}
+.gridtable .datacell.editing{border: 1px solid #1ed004 !important;background-color: #d3ffd7 !important;}
+.gridtable .datatext{padding:10px 10px;height: 100%;text-overflow: clip;overflow: hidden;/*white-space: nowrap;*/}
+.gridtable .datatext.empty{font-size: 0.9em;color:#CCCCCC;font-style: italic;}
 /*.gridtable .dataedit{display: none;}*/
 .gridtable .dataedit input{width: 100%;border:0;background: transparent;padding:10px;}
 
-.datacell.editing{border: 1px solid #1ed004 !important;background-color: #d3ffd7 !important;}
+.gridtable .addrow .row {border:0;padding:0;margin:0;}
+.gridtable .addrow .datacell{background: #F9FAFC;height: auto;}
+.gridtable .addrow .datatext{padding:15px 10px;font-weight: }
+.gridtable .addrow .dataedit{padding: 5px 10px 10px;}
+.gridtable .addrow label{color:#739bb2; font-weight: normal; font-size: .95em;margin:0;padding:0 5px;display: block;}
+.gridtable .addrow .dataedit input {padding:5px 5px;background-color: rgba(165, 222, 255, 0.1)}
+.gridtable .addrow .dataedit input:focus {background-color: rgba(165, 222, 255, 0.3)}
 /*.datacell.editing .datatext{display: none;}*/
 /*.datacell.editing .dataedit{display: block;}*/
 
