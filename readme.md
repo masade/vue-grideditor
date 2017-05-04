@@ -10,10 +10,10 @@ This is an excel style grid editor using vuejs (www.vuejs.org)
 - [x] Use Local Storage
 - [x] Cell based inline editing
 - [x] Row based inline editing
-- [ ] Grid Traversal
+- [x] Grid Traversal
 - [ ] Ajax Update
-- [ ] New Row Addition
-- [ ] Gird Sorting based on primary column
+- [x] New Row Addition
+- [x] Gird Sorting based on primary column
 
 #### v2
 - [ ] Various Input types - Inline Edit

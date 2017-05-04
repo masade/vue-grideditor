@@ -95,6 +95,8 @@ var datacellComponent = Vue.extend({
 			}
 			this.newrow.id = gridStorage.uid++;
 			this.$parent.rows.unshift(this.newrow)
+			// this.$parent.editcell = null;
+			// this.$parent.cursorcell = "0,0";
 			this.newrow = {};
 		},
 		reset: function(e){
