@@ -30,20 +30,20 @@ function isInViewport(element,moveInViewport) {
 		return inviewport;
 
 	// console.log(inviewport);
-	if(!inviewport){
+	// if(!inviewport){
+		offset = element.offsetHeight + 10;
 		scrollY = document.body.scrollTop;
-		if(rect.bottom >= wh)
-			scrollY += (rect.bottom - wh + 10)
-		if(rect.top <= 0 )
-			scrollY += (rect.top - 10)
+		if(rect.bottom >= wh - offset)
+			scrollY += (rect.bottom - wh + offset)
+		if(rect.top <= offset )
+			scrollY += (rect.top - offset)
 
 		scrollX = document.body.scrollLeft;
 		if(rect.right >= ww)
 			scrollX += (rect.right - ww + 10)
 		if(rect.left <= 0 )
 			scrollX += (rect.left - 10)
-
-	}
+	// }
 	window.scrollTo(scrollX,scrollY);
 }
 
