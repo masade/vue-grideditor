@@ -73,6 +73,8 @@ var datacellComponent = Vue.extend({
 				this.$parent.editcell = this.cellindex;
 		},
 		doneEdit: function(e) {
+			// e.target.value;
+			// console.log(e.target.value);
 			this.$emit('input', e.target.value);
 			this.$parent.editcell 	= null;
 
@@ -222,7 +224,6 @@ Vue.directive('focus', {
 		Vue.nextTick(function() {
 			if(binding.value){
 			  	el.focus();
-			  	console.log(el.name+" focus");
 			}
 		});
 	}
