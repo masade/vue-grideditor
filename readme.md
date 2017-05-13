@@ -17,6 +17,8 @@ This is an excel style grid editor using vuejs (www.vuejs.org)
 - [ ] Ajax Data Update
 - [ ] Type Ahead
 - [ ] Inlien Edit
+- [x] Copy, Paste, Delete using keyboard
+- [x] Undo Actions with keyboard Ctrl+Z
 
 #### v2
 - [ ] Various Input types - Inline Edit

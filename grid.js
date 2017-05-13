@@ -7,10 +7,11 @@ var gridStorage = {
 	rows.forEach(function (row, index) {
 	  row.id = index
 	})
-	gridStorage.uid = rows.length
-	return rows
+	gridStorage.uid = rows.length;
+	return rows;
   },
   save: function (rows) {
+  	gridStorage.uid = rows.length
 	localStorage.setItem(STORAGE_KEY, JSON.stringify(rows))
   }
 }
@@ -45,7 +46,7 @@ function isInViewport(element,moveInViewport) {
 	window.scrollTo(scrollX,scrollY);
 }
 
-var	keys = { ESC: 27, TAB: 9, RETURN: 13, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, C: 67, V: 86, DELETE: 8};
+var	keys = { ESC: 27, TAB: 9, RETURN: 13, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, C: 67, V: 86, X: 88, Z: 90, DELETE: 8};
 
 // Data Cell Component
 var datacellComponent = Vue.extend({
@@ -124,6 +125,7 @@ Vue.component('datagrid', {
 			cursorcell  : null,
 			editcell 	: null,
 			copiedcell	: null,
+			pastelog	: [],
 		}
 	},
 	computed   :  {
@@ -166,22 +168,32 @@ Vue.component('datagrid', {
 			this.editcell = null;
 			this.cursorcell = index;
 		},
-		cursorval : function(index){
+		getcellval : function(index){
 			var c = index.split(',');
 			if(c[0] >= 0)
 				return this.rows[c[0]][this.cols[c[1]]['m']];
 			return null;
 		},
-		pasteval : function(index,val){
+		setcellval : function(index,val,undo){
 			var c = index.split(',');
-			if(c[0] >= 0)
+			if(c[0] >= 0){
+				if(!undo) // log if not not undo
+					this.pastelog.push({"index":index,"value":this.getcellval(index)});
+
 				this.rows[c[0]][this.cols[c[1]]['m']] = val;
+				// console.log(this.pastelog);
+			}
+		},
+		undoval : function(){
+			var undo = this.pastelog.pop();
+			if(undo)
+				this.setcellval(undo['index'],undo['value'],true);
 		},
 		handleKeynav : function(e){
 			var preventKeyDefault = false;
 			if(e.which == keys.ESC){ preventKeyDefault= true;}
 
-			console.log(e.which,e.ctrlKey);
+			// console.log(e.which,e.ctrlKey);
 			//edit cell on enter
 			if(!this.editcell && this.cursorcell){
 				if(e.which == keys.RETURN){
@@ -194,9 +206,11 @@ Vue.component('datagrid', {
 				if(e.which == keys.C && e.ctrlKey)
 					this.copiedcell = this.cursorcell;
 				if(e.which == keys.V && e.ctrlKey)
-					this.pasteval(this.cursorcell,this.cursorval(this.copiedcell));
+					this.setcellval(this.cursorcell,this.getcellval(this.copiedcell));
 				if(e.which == keys.DELETE)
-					this.pasteval(this.cursorcell,null);
+					this.setcellval(this.cursorcell,null);
+				if(e.which == keys.Z && e.ctrlKey)
+					this.undoval();
 
 			}
 
