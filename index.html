@@ -21,7 +21,7 @@ var cols = [
 	];
 </script>
 <section id="gridtable" class="datagrid gridtable">
-	<datagrid v-model="rows" :cols="cols"></datagrid>
+	<datagrid :rows="rows" :cols="cols" ></datagrid>
 	<div class="container"><pre>{{ $data }}</pre></div>
 </section>
 </div>
@@ -49,7 +49,7 @@ var cols = [
 				</div>
 			</div>
 			<addrow cellindex="-1,-1"></addrow>
-			<div v-for="(row,rowIndex) in value"
+			<div v-for="(row,rowIndex) in rows"
 				:class="['row',{'cursorrow':(cursorrow==rowIndex)}]"
 			>
 					<!-- @input="myInput" -->

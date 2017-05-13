@@ -82,26 +82,27 @@ var datacellComponent = Vue.extend({
 		cancelEdit: function(e) {
 			this.$parent.editcell = null;
 		},
+		makeNewRow(){
+			console.log("here");
+			this.newrow = {};
+			this.$parent.cols.map((col,index) => this.$set(this.newrow, col.m, ""))
+		},
 		addRow: function (e) {
 			e.preventDefault();
-			// console.log(this.newrow);
+			console.log(this.newrow);
 			var value = this.newrow.name && this.newrow.name.trim()
 			if (!value) {
 				return
 			}
 			this.newrow.id = gridStorage.uid++;
 			var newrow = this.newrow;
-			// console.log(newrow);
+			const vm = this;
 			this.$parent.cols.map(function(col,index){
 				if(typeof newrow[col.m] == "undefined")
-					newrow[col.m] = "";
+					vm.$set(newrow, col.m,"");
 			})
-			// console.log(newrow);
-			this.newrow = newrow;
-			this.$parent.value.unshift(this.newrow)
-			// this.$parent.editcell = null;
-			// this.$parent.cursorcell = "0,0";
-			this.newrow = {};
+			this.$parent.rows.unshift(newrow);
+			this.makeNewRow();
 		},
 		reset: function(e){
 			e.preventDefault();
@@ -109,6 +110,9 @@ var datacellComponent = Vue.extend({
 			this.$parent.editcell = null;
 			// this.$parent.cursorcell  = null;
 		}
+	},
+	mounted: function(){
+		this.makeNewRow();
 	}
 })
 
@@ -119,14 +123,13 @@ var addrowComponent = datacellComponent.extend({
 // Data Grid Component
 Vue.component('datagrid', {
 	template 	: '#datagrid-template',
-	props 		: ['value','cols'],
+	props 		: ['rows','cols'],
 	components 	: {
 		'datacell' 	: datacellComponent,
 		'addrow'	: addrowComponent,
 	},
 	data 	: function (){
 		return {
-			newrow: '',
 			cursorcell  : null,
 			editcell 	: null,
 		}
@@ -158,7 +161,7 @@ Vue.component('datagrid', {
 		},
 		totalrows: function(){
 			// return 0;
-			return this.value.length;
+			return this.rows.length;
 		},
 		totalcols: function(){
 			return this.cols.reduce(function(count,col) {
@@ -170,6 +173,10 @@ Vue.component('datagrid', {
 		window.addEventListener('keydown', event => this.handleKeynav(event));
 	},
 	methods: {
+		addRow: function(row){
+			console.log(row);
+			this.$emit('addrow',row);
+		},
 		moveCursor: function(index){
 			this.editcell = null;
 			this.cursorcell = index;
@@ -243,6 +250,7 @@ var app = new Vue({
 	watch: {
 		rows: {
 			handler: function (rows) {
+				console.log(rows);
 				gridStorage.save(rows)
 			},
 			deep: true
@@ -250,6 +258,11 @@ var app = new Vue({
 	},
 	computed: {},
 	methods: {
+		addRow : function(row){
+			console.log(row);
+			console.log("myrow");
+			this.rows.unshift(row);
+		},
 		removeAll: function(){ this.rows = [];}
 	}
 });

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="vue.js"></script>
+	<style type="text/css">
+		body{font-family: sans-serif;}
+		* {box-sizing: border-box;}
+		.container{width:80%; margin: auto;clear:both;background: #FFFFFF}
+		.datacell{width: 49.5%;float:left;border: 1px solid #F5F5F5;height: 40px;}
+		.datatext{padding:10px;}
+		.dataedit {height: 100%;}
+		.datacell input{width: 100%;height:100%;padding:2px 8px;font-size: 1em;background:#CEF;}
+		.datacell input:focus{border:1px solid #00C;outline: none;}
+		.row{clear: both;overflow: hidden;}
+	</style>
+</head>
+<body>
+<div class="wrapper">
+
+<section id="gridtable">
+<small>click on cells to edit / add</small>
+<datagrid :rows="rows" :cols="cols"></datagrid>
+<div class="container"><pre>{{ $data }}</pre></div>
+</section>
+
+<!-- Data Grid Template -->
+<template id="datagrid-template">
+	<div class="container">
+			<addrow cellindex="-1,-1"></addrow>
+			<div v-for="(row,rowIndex) in rows" class="row">
+				<datacell v-for="(c,colIndex) in cols"
+					v-model="row[c.m]"
+					@input="onInput(row, c, $event)"
+
+					:cellindex="rowIndex+','+colIndex"
+					:key="rowIndex+','+colIndex"
+				></datacell>
+			</div>
+	</div>
+</template>
+
+<!-- Data Cell template -->
+<template id="datacell-template">
+<div :class="['datacell',{'editing':editing}]">
+	<div class="datatext" v-text="value?value:'-'" v-show="!editing" @click="editCell" ></div>
+	<div class="dataedit" v-if="editing">
+		<input type="text"
+			:value="value"
+			v-focus="true"
+			@keydown.self.stop.enter="doneEdit"
+		 />
+	</div>
+</div>
+</template>
+
+<!-- Data Cell template -->
+<template id="addrow-template">
+	<div class="row addrow">
+		<div class="datacell">
+			<div class="datatext" v-text="'+ Add Row'" v-show="!editing" @click="editCell($event)"></div>
+			<div v-for="(c,colIndex) in $parent.cols" v-if="c.new && editing" class="dataedit">
+				<input type="text"
+					:name="c.m"
+					:placeholder="c.m"
+					v-model="newrow[c.m]"
+					v-focus="!colIndex"
+					@keyup.enter="addRow($event)"
+				/>
+			</div>
+		</div>
+	</div>
+</template>
+
+<script type="text/javascript">
+var STORAGE_KEY = 'grid-vue-local'
+window.gridStorage = {
+  fetch: function () {
+    var rows = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
+    rows.forEach(function (row, index) {
+      row.id = index
+    })
+    gridStorage.uid = rows.length
+    return rows
+  },
+  save: function (rows) {
+  	gridStorage.uid = rows.length
+		localStorage.setItem(STORAGE_KEY, JSON.stringify(rows))
+  }
+}
+
+// Data Cell Component
+var datacellComponent = Vue.extend({
+	template 	: '#datacell-template',
+	props 		: ['value','cellindex'],
+	data 		: function(){
+		return {
+			newrow : {}
+		}
+	},
+	computed	: {
+		editing: function(){
+			return (this.$parent.editcell == this.cellindex)?true:false;
+		}
+	},
+	methods 	:{
+		editCell:function(e){
+			this.$parent.editcell = this.cellindex;
+		},
+		doneEdit: function(e) {
+			this.$emit('input', e.target.value);
+			this.$parent.editcell 	= null;
+		},
+		makeNewRow(){
+			this.newrow = {};
+			this.$parent.cols.map((col,index) => this.$set(this.newrow, col.m, null))
+		},
+
+	addRow: function (e) {
+			e.preventDefault();
+			this.newrow.id = gridStorage.uid++;
+			var newrow = this.newrow;
+      const vm = this;
+			this.$parent.cols.map(function(col,index){
+				if(typeof newrow[col.m] == "undefined")
+					vm.$set(newrow, col.m,"");
+			})
+			this.$parent.rows.unshift(this.newrow)
+			this.makeNewRow()
+		},
+	},
+	mounted(){
+		this.makeNewRow()
+	}
+})
+
+var addrowComponent = datacellComponent.extend({
+	template 	: '#addrow-template',
+})
+
+// Data Grid Component
+Vue.component('datagrid', {
+	template 	: '#datagrid-template',
+	props 		: ['rows','cols'],
+	components 	: {
+		'datacell' 	: datacellComponent,
+		'addrow'	: addrowComponent,
+	},
+  methods:{
+      onInput(row, col, event){
+    	// console.log(row,col,event)
+    },
+  },
+	data 	: function (){
+		return {
+			editcell 	: null,
+		}
+	}
+});
+
+// v-focus on form element after showing
+Vue.directive('focus', function (el,binding) {Vue.nextTick(function() { if(binding.value){ el.focus();}});})
+
+var app = new Vue({
+	data: {
+		rows: gridStorage.fetch(),
+		cols : [{m:'name',new:true},{m:'year',new:false}],
+	},
+	watch: {
+		rows: {
+			handler: function (rows) {
+        // console.log(rows)
+				gridStorage.save(rows)
+			},
+			deep: true
+		}
+	},
+	created: function(){
+		this.rows = this.rows.length? this.rows : [{"name":"Robin Hood","year":1999,"id":0},{"name":"Queen Jolly","year":1973,"id":1},{"name":"King Jhon","year":2000,"id":2},]
+	}
+});
+
+
+app.$mount('#gridtable');
+
+</script>
+</body>
+</html>
