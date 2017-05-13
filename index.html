@@ -52,7 +52,6 @@ var cols = [
 			<div v-for="(row,rowIndex) in rows"
 				:class="['row',{'cursorrow':(cursorrow==rowIndex)}]"
 			>
-					<!-- @input="myInput" -->
 				<datacell v-for="(c,colIndex) in cols"
 					v-model="row[c.m]"
 					:namespace="c.namespace"
@@ -72,7 +71,7 @@ var cols = [
 
 <!-- Data Cell template -->
 <template id="datacell-template">
-<div :class="[widthclass,'datacell',{'editing':editing},{'cursor':cursor}]"
+<div :class="[widthclass,'datacell',{'editing':editing},{'cursor':cursor},{'copied':copied}]"
 	v-inviewport="cursor"
 
 >

@@ -11,9 +11,12 @@ This is an excel style grid editor using vuejs (www.vuejs.org)
 - [x] Cell based inline editing
 - [x] Row based inline editing
 - [x] Grid Traversal
-- [ ] Ajax Update
 - [x] New Row Addition
 - [x] Gird Sorting based on primary column
+- [ ] Ajax Data Load
+- [ ] Ajax Data Update
+- [ ] Type Ahead
+- [ ] Inlien Edit
 
 #### v2
 - [ ] Various Input types - Inline Edit

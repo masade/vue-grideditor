@@ -25,6 +25,7 @@ button {background: none;}
 .datagrid .datacell{border: 1px solid transparent;height: 65px;}
 .datagrid .cursorrow .datacell{background: #FAFBFC;}
 /*.datagrid .datacell:hover{background: #F9FAFC;border:1px dashed #00b9e6;background-color: #ebf7ff;}*/
+.datagrid .datacell.copied{color:#EE9900;border: 1px dashed #FFDD00 !important;background-color: #FFFFEE !important;}
 .datagrid .datacell.cursor{border:1px dashed #00b9e6 !important;background-color: #ebf7ff !important;}
 .datagrid .datacell.editing{border: 1px dashed #1ed004 !important;background-color: #d3ffd7 !important;}
 .datagrid .datatext{padding:10px 10px;height: 100%;text-overflow: clip;overflow: hidden;/*white-space: nowrap;*/}

@@ -29,25 +29,23 @@ function isInViewport(element,moveInViewport) {
 	if(!moveInViewport)
 		return inviewport;
 
-	// console.log(inviewport);
-	// if(!inviewport){
-		offset = element.offsetHeight + 10;
-		scrollY = document.body.scrollTop;
-		if(rect.bottom >= wh - offset)
-			scrollY += (rect.bottom - wh + offset)
-		if(rect.top <= offset )
-			scrollY += (rect.top - offset)
+	offset = element.offsetHeight + 10;
+	scrollY = document.body.scrollTop;
+	if(rect.bottom >= wh - offset)
+		scrollY += (rect.bottom - wh + offset)
+	if(rect.top <= offset )
+		scrollY += (rect.top - offset)
 
-		scrollX = document.body.scrollLeft;
-		if(rect.right >= ww)
-			scrollX += (rect.right - ww + 10)
-		if(rect.left <= 0 )
-			scrollX += (rect.left - 10)
-	// }
+	scrollX = document.body.scrollLeft;
+	if(rect.right >= ww)
+		scrollX += (rect.right - ww + 10)
+	if(rect.left <= 0 )
+		scrollX += (rect.left - 10)
+
 	window.scrollTo(scrollX,scrollY);
 }
 
-var	keys = { ESC: 27, TAB: 9, RETURN: 13, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40 };
+var	keys = { ESC: 27, TAB: 9, RETURN: 13, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, C: 67, V: 86, DELETE: 8};
 
 // Data Cell Component
 var datacellComponent = Vue.extend({
@@ -64,6 +62,9 @@ var datacellComponent = Vue.extend({
 		},
 		editing: function(){
 			return (this.$parent.editcell == this.cellindex)?true:false;
+		},
+		copied: function(){
+			return (this.$parent.copiedcell == this.cellindex)?true:false;
 		}
 	},
 	methods 	:{
@@ -73,8 +74,6 @@ var datacellComponent = Vue.extend({
 				this.$parent.editcell = this.cellindex;
 		},
 		doneEdit: function(e) {
-			// e.target.value;
-			// console.log(e.target.value);
 			this.$emit('input', e.target.value);
 			this.$parent.editcell 	= null;
 
@@ -82,33 +81,25 @@ var datacellComponent = Vue.extend({
 		cancelEdit: function(e) {
 			this.$parent.editcell = null;
 		},
-		makeNewRow(){
-			console.log("here");
+		makeNewRow: function(){
 			this.newrow = {};
-			this.$parent.cols.map((col,index) => this.$set(this.newrow, col.m, ""))
+			this.$parent.cols.map((col,index) => this.$set(this.newrow, col.m, null))
 		},
 		addRow: function (e) {
 			e.preventDefault();
-			console.log(this.newrow);
 			var value = this.newrow.name && this.newrow.name.trim()
 			if (!value) {
 				return
 			}
 			this.newrow.id = gridStorage.uid++;
-			var newrow = this.newrow;
-			const vm = this;
-			this.$parent.cols.map(function(col,index){
-				if(typeof newrow[col.m] == "undefined")
-					vm.$set(newrow, col.m,"");
-			})
-			this.$parent.rows.unshift(newrow);
+			this.$parent.rows.unshift(this.newrow);
 			this.makeNewRow();
 		},
 		reset: function(e){
 			e.preventDefault();
-			this.newrow={}
 			this.$parent.editcell = null;
 			// this.$parent.cursorcell  = null;
+			this.makeNewRow();
 		}
 	},
 	mounted: function(){
@@ -132,12 +123,10 @@ Vue.component('datagrid', {
 		return {
 			cursorcell  : null,
 			editcell 	: null,
+			copiedcell	: null,
 		}
 	},
 	computed   :  {
-		myInput : function(v){
-			// console.log(v);
-		},
 		cursorrow : function(){
 			return this.cursorcell?parseInt(this.cursorcell.split(',')[0]):null;
 		},
@@ -173,19 +162,26 @@ Vue.component('datagrid', {
 		window.addEventListener('keydown', event => this.handleKeynav(event));
 	},
 	methods: {
-		addRow: function(row){
-			console.log(row);
-			this.$emit('addrow',row);
-		},
 		moveCursor: function(index){
 			this.editcell = null;
 			this.cursorcell = index;
 		},
+		cursorval : function(index){
+			var c = index.split(',');
+			if(c[0] >= 0)
+				return this.rows[c[0]][this.cols[c[1]]['m']];
+			return null;
+		},
+		pasteval : function(index,val){
+			var c = index.split(',');
+			if(c[0] >= 0)
+				this.rows[c[0]][this.cols[c[1]]['m']] = val;
+		},
 		handleKeynav : function(e){
 			var preventKeyDefault = false;
-			// console.log(e.which);
 			if(e.which == keys.ESC){ preventKeyDefault= true;}
 
+			console.log(e.which,e.ctrlKey);
 			//edit cell on enter
 			if(!this.editcell && this.cursorcell){
 				if(e.which == keys.RETURN){
@@ -194,6 +190,15 @@ Vue.component('datagrid', {
 				}
 			}
 
+			if(!this.editcell && this.cursorcell){
+				if(e.which == keys.C && e.ctrlKey)
+					this.copiedcell = this.cursorcell;
+				if(e.which == keys.V && e.ctrlKey)
+					this.pasteval(this.cursorcell,this.cursorval(this.copiedcell));
+				if(e.which == keys.DELETE)
+					this.pasteval(this.cursorcell,null);
+
+			}
 
 			// Manage cursor movement only when cell not editing
 			if(!this.editcell){
@@ -250,7 +255,6 @@ var app = new Vue({
 	watch: {
 		rows: {
 			handler: function (rows) {
-				console.log(rows);
 				gridStorage.save(rows)
 			},
 			deep: true
@@ -258,11 +262,6 @@ var app = new Vue({
 	},
 	computed: {},
 	methods: {
-		addRow : function(row){
-			console.log(row);
-			console.log("myrow");
-			this.rows.unshift(row);
-		},
 		removeAll: function(){ this.rows = [];}
 	}
 });
