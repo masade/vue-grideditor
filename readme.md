@@ -30,4 +30,9 @@ This is a grid editor built on VueJS to simulate something like a spreadsheet.
 - [ ] Ability to choose columns - dynamic based on data
 - [ ] Search based on coloumns
 
+License
 (c) 2017 Paresh Masade, Released under the MIT License.
+Copyright notice and permission notice shall be included in all copies or substantial portions of the Software.
+
+Authors
+Paresh Masade / @masade
