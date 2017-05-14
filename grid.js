@@ -260,7 +260,7 @@ Vue.component('datagrid', {
 				this.rows[c[0]][this.cols[c[1]]['m']] = val;
 				// console.log(this.pastelog);
 				var params = {'id':this.rows[c[0]]['id'],'key': this.cols[c[1]]['m'],'val': val};
-				console.log(params);
+				// console.log(params);
 				dataStorage.cellupdate(params,function(){});
 			}
 		},
