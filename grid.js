@@ -33,8 +33,9 @@ var dataStorage = {
 					cb(rows);
 				})
 				.catch(function (error) { console.log(error);});
+			}else {
+				cb(rows);
 			}
-			// cb(rows);
 		}else{
 			return rows;
 		}
