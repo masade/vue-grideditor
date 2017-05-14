@@ -7,52 +7,52 @@ axios.defaults.baseURL = 'http://localhost/vue/grid/methods/';
 var STORAGE_KEY = 'grid-vue';
 
 var dataStorage = {
-	fetch: function(data,cb){
+	fetch: function(cb){
 		var rows = [];
-		if(useLocalStorage)
+		if(useRemoteStorage){
+			axios.get('get.php').then(function(response){
+				rows = response.data;
+				dataStorage.save(rows);
+				cb(rows);
+			})
+			.catch(function (error) { console.log(error);});
+		}
+		else if(useLocalStorage){
 			rows = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+			cb(rows);
+		}else{
+			return rows;
+		}
 
-		// if(useRemoteStorage){
-		// 	axios.get('get.php').then(function(response){
-		// 		rows = response.data;
-		// 		dataStorage.save(rows);
-		// 		cb();
-		// 	})
-		// 	.catch(function (error) { console.log(error);});
-		// };
-
-		return rows;
-				// vm.loading = false;
-				// vm.$parent.rows = response.data;
 	},
 	save : function(rows,cb){
 		if(useLocalStorage)
 			localStorage.setItem(STORAGE_KEY, JSON.stringify(rows))
 	},
 	cellupdate: function(data,cb){
-
+		if(useRemoteStorage){
+			axios.post('put.php',data)
+				.then(function(response){
+					cb(response.data)
+					// console.log(response.data);
+				})
+				.catch(function (error) {console.log(error);});
+		}else if(useLocalStorage){
+			cb(data);
+		}
 	},
-	rowupdate: function(data,cb){
-
+	rowadd: function(data,cb){
+		if(useRemoteStorage){
+			axios.post('post.php',data)
+			.then(function(response){
+				cb(response.data);
+			})
+			.catch(function (error) {console.log(error);});
+		}else if(useLocalStorage){
+			data.id = crypto.getRandomValues(new Uint32Array(1));
+			cb(data);
+		}
 	}
-}
-
-var gridStorage = {
-  fetch: function () {
-  	// if(!useLocalStorage) return [];
-
-
-	// rows.forEach(function (row, index) {
-	//   row.id = index
-	// })
-	// gridStorage.uid = rows.length;
-	return rows;
-  },
-  save: function (rows) {
-  	if(!useLocalStorage) return;
-  	gridStorage.uid = rows.length
-	localStorage.setItem(STORAGE_KEY, JSON.stringify(rows))
-  }
 }
 
 function isInViewport(element,moveInViewport) {
@@ -116,24 +116,11 @@ var datacellComponent = Vue.extend({
 		doneEdit: function(e) {
 			this.$emit('input', e.target.value);
 			this.$parent.editcell 	= null;
-			vm = this.$parent;
+			const vm = this.$parent;
 			vm.loading = true;
-			// console.log(e.target.name,e);
-			var params = {};
-			params.id = e.target.dataset.id;
-			params.key = e.target.name;
-			params.val = e.target.value;
-			// var p = JSON.stringify(params)
-			axios.post('put.php',
-			          params)
-			.then(function(response){
-					vm.loading = false;
-					console.log(response.data);
-					// vm.$parent.rows = response.data;
-					// gridStorage.save(response.data);
-				})
-				.catch(function (error) {
-					console.log(error);
+			var params = {'id':e.target.dataset.id,'key': e.target.name,'val': e.target.value};
+			dataStorage.cellupdate(params,function(){
+				vm.loading = false;
 			});
 
 		},
@@ -150,21 +137,12 @@ var datacellComponent = Vue.extend({
 			if (!value) {
 				return
 			}
-			vm = this.$parent;
+			var vm = this.$parent;
 			vm.loading = true;
-			axios.post('post.php',
-			          this.newrow)
-			.then(function(response){
-					vm.loading = false;
-					// console.log(response.data);
-					// vm.$parent.rows = response.data;
-					vm.rows.unshift(response.data);
-					// gridStorage.save(response.data);
-				})
-				.catch(function (error) {
-					console.log(error);
-			});
-			// this.newrow.id = gridStorage.uid++;
+			dataStorage.rowadd(this.newrow,function(data){
+				vm.loading = false;
+				vm.rows.unshift(data);
+			})
 			this.makeNewRow();
 		},
 		reset: function(e){
@@ -246,18 +224,9 @@ Vue.component('datagrid', {
 		getdata : function(){
 			const vm = this;
 			vm.loading = true;
-			// dataStorage.fetch({},function(data){
-			// 	vm.loading = false;
-			// 	vm.$parent.rows = data;
-			// });
-			axios.get('get.php')
-				.then(function(response){
-					vm.loading = false;
-					vm.$parent.rows = response.data;
-					dataStorage.save(response.data);
-				})
-				.catch(function (error) {
-					console.log(error);
+			dataStorage.fetch(function(data){
+				vm.loading = false;
+				vm.$parent.rows = data;
 			});
 		},
 		getcellval : function(index){
@@ -274,6 +243,9 @@ Vue.component('datagrid', {
 
 				this.rows[c[0]][this.cols[c[1]]['m']] = val;
 				// console.log(this.pastelog);
+				var params = {'id':this.rows[c[0]]['id'],'key': this.cols[c[1]]['m'],'val': val};
+				console.log(params);
+				dataStorage.cellupdate(params,function(){});
 			}
 		},
 		undoval : function(){
@@ -355,7 +327,7 @@ Vue.directive('inviewport',function(el,binding){
 
 var app = new Vue({
 	data: {
-		rows: [],
+		rows: [],//dataStorage.fetch(),
 		cols : cols,
 	},
 	watch: {
