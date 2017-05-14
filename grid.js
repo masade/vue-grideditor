@@ -1,16 +1,55 @@
 // localStorage persistence
-// var STORAGE_KEY = 'todos-vuejs-2.0'
-var STORAGE_KEY = 'grid-vue'
+// var useRemoteStorage = false;
+var useLocalStorage = true;
+var useRemoteStorage = true;
+// var useLocalStorage = false;
+axios.defaults.baseURL = 'http://localhost/vue/grid/methods/';
+var STORAGE_KEY = 'grid-vue';
+
+var dataStorage = {
+	fetch: function(data,cb){
+		var rows = [];
+		if(useLocalStorage)
+			rows = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+		// if(useRemoteStorage){
+		// 	axios.get('get.php').then(function(response){
+		// 		rows = response.data;
+		// 		dataStorage.save(rows);
+		// 		cb();
+		// 	})
+		// 	.catch(function (error) { console.log(error);});
+		// };
+
+		return rows;
+				// vm.loading = false;
+				// vm.$parent.rows = response.data;
+	},
+	save : function(rows,cb){
+		if(useLocalStorage)
+			localStorage.setItem(STORAGE_KEY, JSON.stringify(rows))
+	},
+	cellupdate: function(data,cb){
+
+	},
+	rowupdate: function(data,cb){
+
+	}
+}
+
 var gridStorage = {
   fetch: function () {
-	var rows = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')
-	rows.forEach(function (row, index) {
-	  row.id = index
-	})
-	gridStorage.uid = rows.length;
+  	// if(!useLocalStorage) return [];
+
+
+	// rows.forEach(function (row, index) {
+	//   row.id = index
+	// })
+	// gridStorage.uid = rows.length;
 	return rows;
   },
   save: function (rows) {
+  	if(!useLocalStorage) return;
   	gridStorage.uid = rows.length
 	localStorage.setItem(STORAGE_KEY, JSON.stringify(rows))
   }
@@ -51,7 +90,7 @@ var	keys = { ESC: 27, TAB: 9, RETURN: 13, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40,
 // Data Cell Component
 var datacellComponent = Vue.extend({
 	template 	: '#datacell-template',
-	props 		: ['value','celldata','cellname','widthclass','noneditable','cellindex','namespace'],
+	props 		: ['value','celldata','cellname','widthclass','noneditable','cellindex','namespace','dataid'],
 	data 		: function(){
 		return {
 			newrow : {}
@@ -77,6 +116,25 @@ var datacellComponent = Vue.extend({
 		doneEdit: function(e) {
 			this.$emit('input', e.target.value);
 			this.$parent.editcell 	= null;
+			vm = this.$parent;
+			vm.loading = true;
+			// console.log(e.target.name,e);
+			var params = {};
+			params.id = e.target.dataset.id;
+			params.key = e.target.name;
+			params.val = e.target.value;
+			// var p = JSON.stringify(params)
+			axios.post('put.php',
+			          params)
+			.then(function(response){
+					vm.loading = false;
+					console.log(response.data);
+					// vm.$parent.rows = response.data;
+					// gridStorage.save(response.data);
+				})
+				.catch(function (error) {
+					console.log(error);
+			});
 
 		},
 		cancelEdit: function(e) {
@@ -92,8 +150,21 @@ var datacellComponent = Vue.extend({
 			if (!value) {
 				return
 			}
-			this.newrow.id = gridStorage.uid++;
-			this.$parent.rows.unshift(this.newrow);
+			vm = this.$parent;
+			vm.loading = true;
+			axios.post('post.php',
+			          this.newrow)
+			.then(function(response){
+					vm.loading = false;
+					// console.log(response.data);
+					// vm.$parent.rows = response.data;
+					vm.rows.unshift(response.data);
+					// gridStorage.save(response.data);
+				})
+				.catch(function (error) {
+					console.log(error);
+			});
+			// this.newrow.id = gridStorage.uid++;
 			this.makeNewRow();
 		},
 		reset: function(e){
@@ -126,6 +197,7 @@ Vue.component('datagrid', {
 			editcell 	: null,
 			copiedcell	: null,
 			pastelog	: [],
+			loading 	: false,
 		}
 	},
 	computed   :  {
@@ -163,10 +235,30 @@ Vue.component('datagrid', {
 	created: function(){
 		window.addEventListener('keydown', event => this.handleKeynav(event));
 	},
+	mounted : function(){
+		this.getdata();
+	},
 	methods: {
 		moveCursor: function(index){
 			this.editcell = null;
 			this.cursorcell = index;
+		},
+		getdata : function(){
+			const vm = this;
+			vm.loading = true;
+			// dataStorage.fetch({},function(data){
+			// 	vm.loading = false;
+			// 	vm.$parent.rows = data;
+			// });
+			axios.get('get.php')
+				.then(function(response){
+					vm.loading = false;
+					vm.$parent.rows = response.data;
+					dataStorage.save(response.data);
+				})
+				.catch(function (error) {
+					console.log(error);
+			});
 		},
 		getcellval : function(index){
 			var c = index.split(',');
@@ -260,16 +352,16 @@ Vue.directive('inviewport',function(el,binding){
 		isInViewport(el,true);
 });
 
-var app = new Vue({
 
+var app = new Vue({
 	data: {
-		rows: gridStorage.fetch(),
+		rows: [],
 		cols : cols,
 	},
 	watch: {
 		rows: {
 			handler: function (rows) {
-				gridStorage.save(rows)
+				dataStorage.save(rows)
 			},
 			deep: true
 		}

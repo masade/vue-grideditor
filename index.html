@@ -22,7 +22,7 @@ var cols = [
 </script>
 <section id="gridtable" class="datagrid gridtable">
 	<datagrid :rows="rows" :cols="cols" ></datagrid>
-	<div class="container"><pre>{{ $data }}</pre></div>
+	<!-- <div class="container"><pre>{{ $data }}</pre></div> -->
 </section>
 </div>
 <div></div>
@@ -34,6 +34,7 @@ var cols = [
 		<div class="container">
 			<div class="row tube20y">
 				<div class="col-md-6">
+				<span class="btn btn-xs btn-danger loader" v-show="loading">Loading...</span>
 					{{ totalrows}} rows
 					<!-- | E: {{ editcell }}-->
 					<!-- | C: {{ cursorcell }} -->
@@ -54,6 +55,7 @@ var cols = [
 			>
 				<datacell v-for="(c,colIndex) in cols"
 					v-model="row[c.m]"
+					:dataid = "row['id']"
 					:namespace="c.namespace"
 					:cellname="c.m"
 					:widthclass="colwidths[colIndex]"
@@ -85,6 +87,7 @@ var cols = [
 		<input type="text"
 			:value="value"
 			:name="cellname"
+			:data-id="dataid"
 			v-focus="true"
 			autocomplete="off"
 			@keydown.self.stop.enter="doneEdit"
@@ -134,7 +137,7 @@ var cols = [
 </div>
 </div>
 </template>
-
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script type="text/javascript" src="grid.js"></script>
 </body>
 </html>

@@ -16,7 +16,7 @@ This is an excel style grid editor using vuejs (www.vuejs.org)
 - [ ] Ajax Data Load
 - [ ] Ajax Data Update
 - [ ] Type Ahead
-- [ ] Inlien Edit
+- [ ] Inline Edit Various Types
 - [x] Copy, Paste, Delete using keyboard
 - [x] Undo Actions with keyboard Ctrl+Z
 
@@ -27,10 +27,9 @@ This is an excel style grid editor using vuejs (www.vuejs.org)
 
 
 ========
-Events Emit to update rows
-Type Ahead
-Inplement in AlumniWiki
-Ajax Update
+- [ ] Ajax Data Load
+- [ ] Ajax Data Update
+- [ ] Type Ahead
 
 
 https://github.com/mrabbani/VueTypeahead
