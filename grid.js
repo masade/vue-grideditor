@@ -8,7 +8,7 @@ var useRemoteStorage = false;
 var useLocalStorage = true;
 var STORAGE_KEY = 'grideditor-vue-1-0';
 
-var baseURL = "http://localhost/vue/grid/methods/"
+var baseURL = "https://masade.github.io/vue-grideditor/methods/"
 
 /*        End of Config       */
 /* -------------------------- */
@@ -26,7 +26,15 @@ var dataStorage = {
 		}
 		else if(useLocalStorage){
 			rows = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-			cb(rows);
+			if(rows.length == 0){
+				axios.get('data.json').then(function(response){
+					rows = response.data;
+					dataStorage.save(rows);
+					cb(rows);
+				})
+				.catch(function (error) { console.log(error);});
+			}
+			// cb(rows);
 		}else{
 			return rows;
 		}
