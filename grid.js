@@ -1,11 +1,27 @@
+/*!
+ * Grid Editor.js v1.0.0
+ * (c) 2017 Paresh Masade
+ * Released under the MIT License.
+ */
 // localStorage persistence
-// var useRemoteStorage = false;
+var useRemoteStorage = false;
 var useLocalStorage = true;
-var useRemoteStorage = true;
-// var useLocalStorage = false;
-axios.defaults.baseURL = 'http://localhost/vue/grid/methods/';
 var STORAGE_KEY = 'grid-vue';
+var cols = [
+		// {m:'id',show:true,w:'10',noneditable:true},
+		{m:'name',namespace:"Name",show:true,w:'20',new:true},
+		{m:'knownfor',namespace:"Known For",show:true,w:'50',new:true},
+		{m:'year',namespace:"Year of Graduation",show:true,w:'8'},
+		{m:'degree',namespace:"Degree",show:true,w:'15'},
+		{m:'specialization',namespace:"Specialization",show:true,w:'15'},
+		{m:'tags',namespace:"Tags",show:true,w:'15'},
+	];
 
+var baseURL = "http://localhost/vue/grid/methods/"
+
+/*        End of Config       */
+/* -------------------------- */
+axios.defaults.baseURL = baseURL;
 var dataStorage = {
 	fetch: function(cb){
 		var rows = [];

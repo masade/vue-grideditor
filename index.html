@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Grid Editor</title>
+	<title>Excel Style Grid Editor</title>
 	<link rel="stylesheet" href="bootstrap.min.css" crossorigin="anonymous">
 	<link rel="stylesheet" type="text/css" href="grid.css" />
-	<script type="text/javascript" src="vue.js"></script>
-	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.0.3/vue.js"></script> -->
 </head>
 <body>
 <div class="wrapper">
@@ -20,6 +18,11 @@ var cols = [
 		{m:'tags',namespace:"Tags",show:true,w:'15'},
 	];
 </script>
+<header class="container">
+	<h1>Excel Style Grid Editor</h1>
+	<p>This is a grid editor built on VueJS to simulate something like a spreadsheet.
+	Use Keyboard to navigate in the grid, hit ENTER or Double Click to edit a cell, ESC to cancel editing. Use Ctrl+C or Ctrl+V to Copy and Paste respectively and backspace to delete. Ctrl+Z helps you undo actions of shortcut keys</p>
+</header>
 <section id="gridtable" class="datagrid gridtable">
 	<datagrid :rows="rows" :cols="cols" ></datagrid>
 	<!-- <div class="container"><pre>{{ $data }}</pre></div> -->
@@ -137,7 +140,9 @@ var cols = [
 </div>
 </div>
 </template>
+<!-- <script src="vue.js"></script> -->
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue/dist/vue.min.js"></script>
 <script type="text/javascript" src="grid.js"></script>
 </body>
 </html>
