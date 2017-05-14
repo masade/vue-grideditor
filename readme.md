@@ -21,17 +21,13 @@ This is a grid editor built on VueJS to simulate something like a spreadsheet.
 - [x] Gird Sorting based on primary column
 - [x] Ajax Data Load
 - [x] Ajax Data Update
-- [ ] Type Ahead
-- [ ] Inline Edit Various Types
 - [x] Copy, Paste, Delete using keyboard
 - [x] Undo Actions with keyboard Ctrl+Z
+- [ ] Type Ahead
+- [ ] Inline Edit Various Types
 
 #### v2
 - [ ] Ability to choose columns - dynamic based on data
+- [ ] Search based on coloumns
 
-========
-- [ ] Type Ahead
-
-
-https://github.com/mrabbani/VueTypeahead
-http://fareez.info/blog/create-your-own-autocomplete-using-vuejs/
+(c) 2017 Paresh Masade, Released under the MIT License.

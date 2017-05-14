@@ -1,21 +1,12 @@
 /*!
- * Grid Editor.js v1.0.0
+ * GridEditor.js v1.0.0
  * (c) 2017 Paresh Masade
  * Released under the MIT License.
  */
 // localStorage persistence
 var useRemoteStorage = false;
 var useLocalStorage = true;
-var STORAGE_KEY = 'grid-vue';
-var cols = [
-		// {m:'id',show:true,w:'10',noneditable:true},
-		{m:'name',namespace:"Name",show:true,w:'20',new:true},
-		{m:'knownfor',namespace:"Known For",show:true,w:'50',new:true},
-		{m:'year',namespace:"Year of Graduation",show:true,w:'8'},
-		{m:'degree',namespace:"Degree",show:true,w:'15'},
-		{m:'specialization',namespace:"Specialization",show:true,w:'15'},
-		{m:'tags',namespace:"Tags",show:true,w:'15'},
-	];
+var STORAGE_KEY = 'grideditor-vue-1-0';
 
 var baseURL = "http://localhost/vue/grid/methods/"
 
