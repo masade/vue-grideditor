@@ -17,9 +17,10 @@ button {background: none;}
 	margin: 20px 0 ;
 }
 .tube20y{padding: 20px 0;}
-/*.container{width: 1600px;}*/
-.gridtable .grid-header{padding: 20px 10px;overflow: hidden;}
-.datagrid{position: relative;}
+
+.datagrid{position: relative;margin-bottom: 60px;}
+/*.datagrid-help{position: fixed; color:#CCCCCC; font-size: 2em; bottom: 20px;margin:1px;padding:10px; background: #FFFFFF;display: block;z-index: 10000;}*/
+
 .datagrid .row{margin:0;}
 .datagrid .row > [class*='col-']{padding:0;}
 .datagrid .datacell{border: 1px solid transparent;height: 65px;}
@@ -32,6 +33,8 @@ button {background: none;}
 .datagrid .datatext.empty{font-size: 0.9em;color:#CCCCCC;font-style: italic;}
 /*.datagrid .dataedit{display: none;}*/
 .datagrid .dataedit input{width: 100%;border:0;background: transparent;padding:10px;}
+.datagrid .datacell .cellhelp{position: absolute;top: -25px; left: 0; font-size: 0.75em;padding:3px 5px; color:#CCC;font-style: italic;line-height: 1.2em;
+	text-overflow: clip;overflow: hidden;white-space: nowrap;background: #F9F9F9;width: 100%;}
 
 .datagrid .addrow .row {border:0;padding:0;margin:0;}
 .datagrid .addrow .datacell{background: #F9FAFC;height: auto;}

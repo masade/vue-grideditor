@@ -10,7 +10,7 @@
 <script type="text/javascript">
 var cols = [
 		// {m:'id',show:true,w:'10',noneditable:true},
-		{m:'name',namespace:"Name",show:true,w:'20',new:true},
+		{m:'name',namespace:"Name",show:true,w:'20',new:true,noneditable:true},
 		{m:'knownfor',namespace:"Known For",show:true,w:'50',new:true},
 		{m:'year',namespace:"Year of Graduation",show:true,w:'8'},
 		{m:'degree',namespace:"Degree",show:true,w:'15'},
@@ -35,6 +35,8 @@ var cols = [
 	<div>
 
 		<div class="container">
+			<!-- <div class="datagrid-help">help will come here</div> -->
+
 			<div class="row tube20y">
 				<div class="col-md-6">
 				<span class="btn btn-xs btn-danger loader" v-show="loading">Loading...</span>
@@ -62,14 +64,13 @@ var cols = [
 					:namespace="c.namespace"
 					:cellname="c.m"
 					:widthclass="colwidths[colIndex]"
-					:noneditable="c.noedit"
+					:noneditable="c.noneditable"
 					:cellindex="rowIndex+','+colIndex"
 					v-if="c.show"
 					:key="rowIndex+','+colIndex"
 				></datacell>
 			</div>
 		</div>
-
 	</div>
 	</div>
 </template>
@@ -83,9 +84,9 @@ var cols = [
 	<div class="datatext" v-text="value?value:''+namespace" :class="{'empty':!value}"
 		v-show="!editing"
 	@dblclick="editCell"
-	@click="$parent.moveCursor(cellindex)"
+	@click="value?$parent.moveCursor(cellindex):editCell()"
 	></div>
-<!-- 	@click="value?$parent.moveCursor(cellindex):editCell" -->
+	<div v-if="helptext" v-text="helptext" class="cellhelp"></div>
 	<div class="dataedit" v-if="editing">
 		<input type="text"
 			:value="value"
@@ -141,9 +142,10 @@ var cols = [
 </div>
 </template>
 
-<!-- <script src="vue.js"></script> -->
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="https://unpkg.com/vue/dist/vue.min.js"></script>
+<script type="text/javascript" src="axios.min.js"></script>
+<script type="text/javascript" src="vue.js"></script>
+<!-- <script src="https://unpkg.com/axios/dist/axios.min.js"></script> -->
+<!-- <script src="https://unpkg.com/vue/dist/vue.min.js"></script> -->
 <script type="text/javascript" src="grid.js"></script>
 </body>
 </html>

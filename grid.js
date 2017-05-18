@@ -8,11 +8,13 @@ var useRemoteStorage = false;
 var useLocalStorage = true;
 var STORAGE_KEY = 'grideditor-vue-1-0';
 
-var baseURL = "https://masade.github.io/vue-grideditor/methods/"
+// var baseURL = "https://masade.github.io/vue-grideditor/methods/"
+var baseURL = "http://localhost/vue/grid/methods/"
 
 /*        End of Config       */
 /* -------------------------- */
 axios.defaults.baseURL = baseURL;
+
 var dataStorage = {
 	fetch: function(cb){
 		var rows = [];
@@ -65,7 +67,7 @@ var dataStorage = {
 			})
 			.catch(function (error) {console.log(error);});
 		}else if(useLocalStorage){
-			data.id = crypto.getRandomValues(new Uint32Array(1));
+			data.id = crypto.getRandomValues(new Uint32Array(1)).toString();
 			cb(data);
 		}
 	}
@@ -101,7 +103,7 @@ function isInViewport(element,moveInViewport) {
 	window.scrollTo(scrollX,scrollY);
 }
 
-var	keys = { ESC: 27, TAB: 9, RETURN: 13, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, C: 67, V: 86, X: 88, Z: 90, DELETE: 8};
+var	keys = { ESC: 27, TAB: 9, RETURN: 13, LEFT: 37, UP: 38, RIGHT: 39, DOWN: 40, C: 67, V: 86, X: 88, Z: 90, DELETE: 46, BACKSPACE: 8};
 
 // Data Cell Component
 var datacellComponent = Vue.extend({
@@ -121,6 +123,15 @@ var datacellComponent = Vue.extend({
 		},
 		copied: function(){
 			return (this.$parent.copiedcell == this.cellindex)?true:false;
+		},
+		helptext: function(){
+			if(this.noneditable && this.cursor)
+				return "This cell is not editable";
+			if(this.editing)
+				return 'Enter to Save, ESC to Cancel';
+			if(this.cursor)
+				return 'Press Enter or '+(this.value?'DoubleClick':'Click')+' to Edit Value';
+			return null;
 		}
 	},
 	methods 	:{
@@ -132,7 +143,7 @@ var datacellComponent = Vue.extend({
 		doneEdit: function(e) {
 			this.$emit('input', e.target.value);
 			this.$parent.editcell 	= null;
-			const vm = this.$parent;
+			var vm = this.$parent;
 			vm.loading = true;
 			var params = {'id':e.target.dataset.id,'key': e.target.name,'val': e.target.value};
 			dataStorage.cellupdate(params,function(){
@@ -273,23 +284,25 @@ Vue.component('datagrid', {
 			var preventKeyDefault = false;
 			if(e.which == keys.ESC){ preventKeyDefault= true;}
 
-			// console.log(e.which,e.ctrlKey);
+			// console.log(e.which,e.ctrlKey,e.metaKey);
 			//edit cell on enter
 			if(!this.editcell && this.cursorcell){
 				if(e.which == keys.RETURN){
+				// var noedit = [keys.LEFT,keys.RIGHT,keys.UP,keys.DOWN,keys.TAB,keys.SHIFT,keys.ESC]
+				// if(noedit.indexOf(e.which) < 0 ){
 					preventKeyDefault = true;
 					this.editcell = this.cursorcell;
 				}
 			}
 
 			if(!this.editcell && this.cursorcell){
-				if(e.which == keys.C && e.ctrlKey)
+				if(e.which == keys.C && (e.ctrlKey || e.metaKey))
 					this.copiedcell = this.cursorcell;
-				if(e.which == keys.V && e.ctrlKey)
+				if(e.which == keys.V && (e.ctrlKey || e.metaKey))
 					this.setcellval(this.cursorcell,this.getcellval(this.copiedcell));
-				if(e.which == keys.DELETE)
+				if(e.which == keys.DELETE || e.which == keys.BACKSPACE)
 					this.setcellval(this.cursorcell,null);
-				if(e.which == keys.Z && e.ctrlKey)
+				if(e.which == keys.Z && (e.ctrlKey || e.metaKey))
 					this.undoval();
 
 			}
@@ -302,6 +315,7 @@ Vue.component('datagrid', {
 					case keys.RIGHT :	preventKeyDefault=true;c= 1;r=0; break;
 					case keys.UP 	:	preventKeyDefault=true;c= 0;r=-1; break;
 					case keys.DOWN 	:	preventKeyDefault=true;c= 0;r=1; break;
+					case keys.TAB 	:	preventKeyDefault=true;c= (e.shiftKey?-1:1);r=0;  break;
 				}
 
 				if(this.cursorcell){
