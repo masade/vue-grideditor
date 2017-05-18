@@ -8,8 +8,8 @@ var useRemoteStorage = false;
 var useLocalStorage = true;
 var STORAGE_KEY = 'grideditor-vue-1-0';
 
-// var baseURL = "https://masade.github.io/vue-grideditor/methods/"
-var baseURL = "http://localhost/vue/grid/methods/"
+var baseURL = "https://masade.github.io/vue-grideditor/methods/"
+// var baseURL = "http://localhost/vue/grid/methods/"
 
 /*        End of Config       */
 /* -------------------------- */
